@@ -1,0 +1,31 @@
+[project]
+name = "glm5-distill"
+version = "0.1.0"
+description = "Distill GLM-5.1 into a small, fast model for consumer hardware deployment"
+requires-python = ">=3.10"
+dependencies = [
+    "zhipuai>=3.0",
+    "transformers>=4.48",
+    "datasets>=3.0",
+    "peft>=0.14",
+    "trl>=0.14",
+    "torch>=2.5",
+    "accelerate>=1.2",
+    "bitsandbytes>=0.45",
+    "python-dotenv>=1.0",
+    "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+mlx = [
+    "mlx>=0.22",
+    "mlx-lm>=0.22",
+]
+eval = [
+    "rouge-score>=0.1",
+    "nltk>=3.9",
+]
+
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.backends._legacy:_Backend"

@@ -1,0 +1,30 @@
+{"prompt": "Explain the difference between a stack and a queue with Python examples.", "category": "code"}
+{"prompt": "Write a Python function to find the longest common subsequence of two strings.", "category": "code"}
+{"prompt": "How does garbage collection work in Python? Explain reference counting and the generational collector.", "category": "code"}
+{"prompt": "Implement a simple HTTP server in Python that handles GET and POST requests.", "category": "code"}
+{"prompt": "Explain the CAP theorem in distributed systems with real-world examples.", "category": "reasoning"}
+{"prompt": "What are the trade-offs between microservices and monolithic architecture?", "category": "reasoning"}
+{"prompt": "Write a SQL query to find the second highest salary in each department.", "category": "code"}
+{"prompt": "Explain how transformers work in deep learning, focusing on the attention mechanism.", "category": "reasoning"}
+{"prompt": "Implement a binary search tree with insert, delete, and search operations in Python.", "category": "code"}
+{"prompt": "What is the difference between TCP and UDP? When would you use each?", "category": "reasoning"}
+{"prompt": "Write a Python decorator that adds retry logic with exponential backoff.", "category": "code"}
+{"prompt": "Explain the concept of eventual consistency and how it differs from strong consistency.", "category": "reasoning"}
+{"prompt": "Implement a simple LRU cache in Python without using functools.", "category": "code"}
+{"prompt": "What are the SOLID principles in software engineering? Give examples for each.", "category": "reasoning"}
+{"prompt": "Write a Python script that processes a CSV file and generates summary statistics.", "category": "code"}
+{"prompt": "Explain how Docker containers differ from virtual machines.", "category": "reasoning"}
+{"prompt": "Implement the observer design pattern in Python.", "category": "code"}
+{"prompt": "What is the difference between process and thread? Explain with examples.", "category": "reasoning"}
+{"prompt": "Write a Python function that validates an email address using regex.", "category": "code"}
+{"prompt": "Explain how HTTPS works, including the TLS handshake process.", "category": "reasoning"}
+{"prompt": "请用中文解释什么是知识蒸馏，以及它在大语言模型中的应用。", "category": "chinese"}
+{"prompt": "用Python实现一个简单的聊天机器人框架，支持多轮对话。", "category": "chinese_code"}
+{"prompt": "解释MapReduce的工作原理，并给出一个词频统计的例子。", "category": "chinese"}
+{"prompt": "请解释数据库索引的原理，B+树索引和哈希索引的区别是什么？", "category": "chinese"}
+{"prompt": "用Python实现快速排序算法，并分析其时间和空间复杂度。", "category": "chinese_code"}
+{"prompt": "Solve this step by step: A train leaves city A at 60 km/h. Another train leaves city B (300 km away) at 90 km/h toward city A. When and where do they meet?", "category": "math"}
+{"prompt": "Prove that the square root of 2 is irrational.", "category": "math"}
+{"prompt": "What is the time complexity of Dijkstra's algorithm and why?", "category": "reasoning"}
+{"prompt": "Write a Python asyncio-based web scraper that respects rate limits.", "category": "code"}
+{"prompt": "Explain the difference between supervised, unsupervised, and reinforcement learning.", "category": "reasoning"}

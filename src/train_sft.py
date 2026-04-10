@@ -22,10 +22,15 @@ from pathlib import Path
 
 import torch
 import yaml
-from datasets import Dataset, concatenate_datasets
+from datasets import Dataset
 from peft import LoraConfig, PeftModel, TaskType, get_peft_model
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import SFTConfig, SFTTrainer
+
+try:
+    from src.persona import PERSONA_SYSTEM
+except ImportError:
+    PERSONA_SYSTEM = "You are a helpful, accurate assistant."
 
 
 def load_config(config_path: str | None) -> dict:
@@ -61,6 +66,7 @@ def load_phase_data(data_dir: str, phase: int, max_samples: int | None = None) -
             item = json.loads(line)
             records.append({
                 "messages": [
+                    {"role": "system", "content": PERSONA_SYSTEM},
                     {"role": "user", "content": item["prompt"]},
                     {"role": "assistant", "content": item["response"]},
                 ]

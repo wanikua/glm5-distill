@@ -10,7 +10,7 @@ This extracts the teacher's implicit reasoning via:
 
 Usage:
     python -m src.generate_teacher_data \
-        --seed_file data/seeds/seed_prompts.jsonl \
+        --seed_file data/seeds/luxun_seeds.jsonl \
         --output_dir data/teacher_outputs \
         --model glm-5.1 \
         --max_workers 8
@@ -57,7 +57,7 @@ CONFIDENCE_SYSTEM = PERSONA_SYSTEM + """
 1) 你对这个判断有几分把握
 2) 什么情况下你的判断会失效
 3) 你觉得自己可能忽略了什么
-孙武也有看走眼的时候。"""
+鲁迅也有看走眼的时候。"""
 
 
 def call_api(client: ZhipuAI, model: str, system: str, prompt: str, temperature: float = 0.7) -> str | None:
@@ -217,7 +217,7 @@ def _flush(results: list[dict], files: dict[str, Path]):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--seed_file", default="data/seeds/seed_prompts.jsonl")
+    parser.add_argument("--seed_file", default="data/seeds/luxun_seeds.jsonl")
     parser.add_argument("--output_dir", default="data/teacher_outputs")
     parser.add_argument("--model", default="glm-5.1")
     parser.add_argument("--max_workers", type=int, default=8)

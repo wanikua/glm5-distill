@@ -19,7 +19,7 @@ Usage:
     python -m src.adversarial \
         --student_path outputs/qwen3-8b-distill/final \
         --rounds 5 \
-        --prompts_file data/seeds/seed_prompts.jsonl
+        --prompts_file data/seeds/luxun_seeds.jsonl
 """
 
 import argparse
@@ -39,6 +39,11 @@ from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import DPOConfig, DPOTrainer
 from zhipuai import ZhipuAI
+
+try:
+    from src.persona import PERSONA_SYSTEM
+except ImportError:
+    PERSONA_SYSTEM = "You are a helpful, accurate assistant."
 
 load_dotenv()
 
@@ -139,7 +144,7 @@ def api_call(client: ZhipuAI, model: str, system: str, prompt: str,
 def student_generate(model, tokenizer, prompt: str, n: int = 1,
                      max_new_tokens: int = 1024) -> list[str]:
     """Generate n responses via rejection sampling."""
-    messages = [{"role": "user", "content": prompt}]
+    messages = [{"role": "system", "content": PERSONA_SYSTEM}, {"role": "user", "content": prompt}]
     text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
@@ -263,7 +268,7 @@ def adversarial_round(
 
     def _tgen(prompt):
         return prompt, api_call(client, teacher_model,
-                                "You are a helpful, accurate assistant.", prompt)
+                                PERSONA_SYSTEM, prompt)
 
     with ThreadPoolExecutor(max_workers=max_workers) as ex:
         futs = {ex.submit(_tgen, p["prompt"]): p for p in prompts}
@@ -458,7 +463,7 @@ def dpo_train(model, tokenizer, dpo_pairs: list[dict], output_dir: str,
 def run(
     student_path: str,
     teacher_model: str = "glm-5.1",
-    prompts_file: str = "data/seeds/seed_prompts.jsonl",
+    prompts_file: str = "data/seeds/luxun_seeds.jsonl",
     output_dir: str = "outputs/adversarial",
     rounds: int = 5,
     k_samples: int = 3,
@@ -554,7 +559,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--student_path", required=True)
     parser.add_argument("--teacher_model", default="glm-5.1")
-    parser.add_argument("--prompts_file", default="data/seeds/seed_prompts.jsonl")
+    parser.add_argument("--prompts_file", default="data/seeds/luxun_seeds.jsonl")
     parser.add_argument("--output_dir", default="outputs/adversarial")
     parser.add_argument("--rounds", type=int, default=5)
     parser.add_argument("--k_samples", type=int, default=3)

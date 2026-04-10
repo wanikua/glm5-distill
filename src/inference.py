@@ -19,6 +19,11 @@ import time
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, TextStreamer
 
+try:
+    from src.persona import PERSONA_SYSTEM
+except ImportError:
+    PERSONA_SYSTEM = "You are a helpful, accurate assistant."
+
 
 def load_model(model_path: str):
     tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
@@ -44,7 +49,7 @@ def load_model(model_path: str):
 
 
 def generate(model, tokenizer, prompt: str, max_new_tokens: int = 1024, stream: bool = True):
-    messages = [{"role": "user", "content": prompt}]
+    messages = [{"role": "system", "content": PERSONA_SYSTEM}, {"role": "user", "content": prompt}]
     text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
 
@@ -75,9 +80,9 @@ def generate(model, tokenizer, prompt: str, max_new_tokens: int = 1024, stream: 
 
 def benchmark(model, tokenizer):
     prompts = [
-        "Write a Python function to check if a number is prime.",
-        "Explain the difference between TCP and UDP in 3 sentences.",
-        "用Python实现一个简单的链表数据结构。",
+        "先生，内卷到底有没有尽头？",
+        "鲁迅先生怎么看现在的短视频？",
+        "年轻人该不该躺平？",
     ]
     total_tokens = 0
     total_time = 0

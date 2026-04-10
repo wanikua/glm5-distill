@@ -1,4 +1,4 @@
-.PHONY: install generate train-8b train-4b adversarial merge-8b merge-4b inference benchmark clean
+.PHONY: install generate train adversarial merge inference benchmark clean
 
 # ===== Setup =====
 install:
@@ -7,44 +7,36 @@ install:
 # ===== Step 1: Extract tacit knowledge from GLM-5.1 =====
 generate:
 	python -m src.generate_teacher_data \
-		--seed_file data/seeds/seed_prompts.jsonl \
+		--seed_file data/seeds/luxun_seeds.jsonl \
 		--output_dir data/teacher_outputs \
 		--max_workers 8
 
 # ===== Step 2: 3-phase Polanyi training =====
-train-8b:
-	python -m src.train_sft --config configs/distill_qwen3_8b.yaml
+train:
+	python -m src.train_sft --config configs/distill_qwen3_14b.yaml
 
-train-4b:
-	python -m src.train_sft --config configs/distill_qwen3_4b.yaml
-
-# ===== Step 3: Adversarial refinement (GAN-style) =====
+# ===== Step 3: Adversarial refinement (GAN-style DPO) =====
 adversarial:
 	python -m src.adversarial \
-		--student_path outputs/qwen3-8b-glm5-distill/final \
+		--student_path outputs/qwen3-14b-luxun/final \
+		--prompts_file data/seeds/luxun_seeds.jsonl \
 		--rounds 5 \
 		--k_samples 3 \
 		--max_workers 8
 
 # ===== Step 4: Merge & export =====
-merge-8b:
+merge:
 	python -m src.merge_and_export \
-		--base_model Qwen/Qwen3-8B \
+		--base_model Qwen/Qwen3-14B \
 		--adapter_path outputs/adversarial/final \
-		--output_dir models/qwen3-8b-glm5-distill
-
-merge-4b:
-	python -m src.merge_and_export \
-		--base_model Qwen/Qwen3-4B \
-		--adapter_path outputs/qwen3-4b-glm5-distill/final \
-		--output_dir models/qwen3-4b-glm5-distill
+		--output_dir models/qwen3-14b-luxun
 
 # ===== Inference =====
 inference:
-	python -m src.inference --model_path models/qwen3-8b-glm5-distill
+	python -m src.inference --model_path models/qwen3-14b-luxun
 
 benchmark:
-	python -m src.inference --model_path models/qwen3-8b-glm5-distill --benchmark
+	python -m src.inference --model_path models/qwen3-14b-luxun --benchmark
 
 clean:
 	rm -rf outputs/ models/ __pycache__ src/__pycache__

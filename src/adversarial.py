@@ -462,10 +462,11 @@ def dpo_train(model, tokenizer, dpo_pairs: list[dict], output_dir: str,
 
 def run(
     student_path: str,
-    teacher_model: str = "glm-5.1",
+    teacher_model: str = "glm-4-plus",
     prompts_file: str = "data/seeds/luxun_seeds.jsonl",
     output_dir: str = "outputs/adversarial",
     rounds: int = 5,
+    sample_size: int = 300,
     k_samples: int = 3,
     dpo_lr: float = 5e-5,
     dpo_epochs: int = 1,
@@ -477,12 +478,15 @@ def run(
         raise ValueError("ZHIPU_API_KEY not set")
     client = ZhipuAI(api_key=api_key)
 
-    # Load seed prompts
+    # Load seed prompts, subsample for adversarial (5000 would take days)
     prompts = []
     with open(prompts_file) as f:
         for line in f:
             if line.strip():
                 prompts.append(json.loads(line))
+    if sample_size and len(prompts) > sample_size:
+        prompts = random.sample(prompts, sample_size)
+        print(f"  Sampled {sample_size} prompts for adversarial")
 
     # Load student
     print(f"Loading student: {student_path}")
@@ -558,10 +562,11 @@ def run(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--student_path", required=True)
-    parser.add_argument("--teacher_model", default="glm-5.1")
+    parser.add_argument("--teacher_model", default="glm-4-plus")
     parser.add_argument("--prompts_file", default="data/seeds/luxun_seeds.jsonl")
     parser.add_argument("--output_dir", default="outputs/adversarial")
     parser.add_argument("--rounds", type=int, default=5)
+    parser.add_argument("--sample_size", type=int, default=300)
     parser.add_argument("--k_samples", type=int, default=3)
     parser.add_argument("--dpo_lr", type=float, default=5e-5)
     parser.add_argument("--max_workers", type=int, default=8)

@@ -146,7 +146,7 @@ def load_seed_prompts(seed_file: str) -> list[dict]:
 def generate_data(
     seed_file: str,
     output_dir: str,
-    model: str = "glm-5.1",
+    model: str = "glm-4-plus",
     max_workers: int = 8,
     num_samples: int | None = None,
 ):
@@ -219,7 +219,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed_file", default="data/seeds/luxun_seeds.jsonl")
     parser.add_argument("--output_dir", default="data/teacher_outputs")
-    parser.add_argument("--model", default="glm-5.1")
+    parser.add_argument("--model", default="glm-4-plus")
     parser.add_argument("--max_workers", type=int, default=8)
     parser.add_argument("--num_samples", type=int, default=None)
     args = parser.parse_args()

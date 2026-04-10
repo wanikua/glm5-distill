@@ -1,0 +1,32 @@
+# 鲁迅人格蒸馏: GLM-5.1 -> Qwen3-14B
+# 14B Q4 = ~8GB, 16GB RAM 电脑能跑, 人格一致性好
+
+student_model: Qwen/Qwen3-14B
+data_dir: data/teacher_outputs
+output_dir: outputs/qwen3-14b-luxun
+
+num_epochs: 3
+batch_size: 2
+gradient_accumulation_steps: 16
+learning_rate: 1e-4
+max_seq_length: 2048
+bf16: true
+
+phase1_lr_mult: 1.0
+phase2_lr_mult: 0.5
+phase3_lr_mult: 0.25
+
+lora_r: 64
+lora_alpha: 128
+lora_dropout: 0.05
+lora_target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+
+logging_steps: 10
+save_steps: 200

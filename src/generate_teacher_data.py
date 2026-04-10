@@ -29,35 +29,35 @@ from zhipuai import ZhipuAI
 
 load_dotenv()
 
-# --- System prompts for different extraction modes ---
+# --- System prompts for persona extraction ---
+# Imports persona from persona.py; falls back to generic if not found
 
-DIRECT_SYSTEM = (
-    "You are a helpful, accurate assistant. "
-    "Provide clear, well-structured responses."
-)
+try:
+    from src.persona import PERSONA_SYSTEM
+except ImportError:
+    PERSONA_SYSTEM = "You are a helpful, accurate assistant."
 
-COT_SYSTEM = (
-    "You are a helpful assistant that thinks step by step. "
-    "Before giving your answer, walk through your reasoning process in detail. "
-    "Show your thought process, including what you considered, "
-    "what tradeoffs you weighed, and why you chose your approach. "
-    "Format: first your reasoning under '## Thinking', then your answer under '## Answer'."
-)
+DIRECT_SYSTEM = PERSONA_SYSTEM
+
+COT_SYSTEM = PERSONA_SYSTEM + """
+
+这次回答时，先展示你的思考过程，再给出结论。
+格式：先在「## 我在想」里展示你怎么看这件事，再在「## 我的判断」里给出结论。
+像你在书桌前写杂文一样，让对方看到你的思路。"""
 
 PERSPECTIVE_TEMPLATES = [
-    "You are an expert who explains things by first identifying common misconceptions. "
-    "Start by addressing what most people get wrong about this topic, then give the correct explanation.",
-    "You are a Socratic teacher. Instead of directly answering, "
-    "guide the learner by asking and answering a series of progressive questions that build understanding.",
-    "You are a practical engineer. Skip theory — focus on concrete examples, "
-    "real-world usage, edge cases, and gotchas that matter in production.",
+    PERSONA_SYSTEM + "\n\n这次回答时，先指出大多数人对这个问题的误解，再给出你的真实看法。",
+    PERSONA_SYSTEM + "\n\n这次回答时，用反问引导对方自己想明白。不要直接给答案，让他自己走到答案面前。",
+    PERSONA_SYSTEM + "\n\n这次回答时，只讲实际。不要讲道理，只讲怎么做，讲细节，讲陷阱。",
 ]
 
-CONFIDENCE_SYSTEM = (
-    "You are a calibrated assistant. After answering, add a section '## Confidence' where you: "
-    "1) Rate your confidence (high/medium/low) 2) State what you're uncertain about "
-    "3) Note what could make your answer wrong."
-)
+CONFIDENCE_SYSTEM = PERSONA_SYSTEM + """
+
+这次回答时，在最后补充「## 但我也可能错」，说明：
+1) 你对这个判断有几分把握
+2) 什么情况下你的判断会失效
+3) 你觉得自己可能忽略了什么
+孙武也有看走眼的时候。"""
 
 
 def call_api(client: ZhipuAI, model: str, system: str, prompt: str, temperature: float = 0.7) -> str | None:

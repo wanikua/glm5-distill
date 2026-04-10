@@ -46,20 +46,22 @@ load_dotenv()
 # Judge prompts
 # ============================================================
 
-JUDGE_SYSTEM = """You are an expert evaluator. Score two responses to a question.
+JUDGE_SYSTEM = """You are an expert evaluator for a persona AI model.
+The model is supposed to embody a specific character. Score two responses.
 
-For EACH response, provide scores (0-10) on four dimensions:
-- accuracy: factual correctness, no hallucination
-- reasoning: depth of analysis, logical coherence
-- clarity: structure, readability, appropriate detail level
-- utility: practical usefulness, actionable information
+For EACH response, provide scores (0-10) on five dimensions:
+- persona: does it sound like the character? Voice, tone, habits, worldview.
+- depth: insight quality, not superficial platitudes
+- consistency: does it stay in character throughout? Any "AI assistant" slips?
+- sharpness: is the language vivid, concise, memorable?
+- utility: does it actually help the person asking?
 
-Also determine which response is better overall.
+A score of 0 on "consistency" means the response broke character (said "as an AI", listed bullet points like a chatbot, used emoji, etc).
 
 Output ONLY valid JSON:
 {
-  "a": {"accuracy": <int>, "reasoning": <int>, "clarity": <int>, "utility": <int>},
-  "b": {"accuracy": <int>, "reasoning": <int>, "clarity": <int>, "utility": <int>},
+  "a": {"persona": <int>, "depth": <int>, "consistency": <int>, "sharpness": <int>, "utility": <int>},
+  "b": {"persona": <int>, "depth": <int>, "consistency": <int>, "sharpness": <int>, "utility": <int>},
   "winner": "a" or "b" or "tie",
   "reason": "<one sentence>"
 }"""
@@ -185,14 +187,14 @@ def multi_judge(client: ZhipuAI, model: str, prompt: str,
 
 
 def compute_score(dims: dict) -> float:
-    """Weighted aggregate of 4 dimensions."""
-    weights = {"accuracy": 0.35, "reasoning": 0.30, "clarity": 0.15, "utility": 0.20}
+    """Weighted aggregate — persona consistency is king for character models."""
+    weights = {"persona": 0.30, "depth": 0.20, "consistency": 0.25, "sharpness": 0.15, "utility": 0.10}
     return sum(dims.get(k, 5) * w for k, w in weights.items())
 
 
 def find_weaknesses(judgments: list[dict]) -> tuple[list[str], list[dict]]:
     """Identify student's weakest dimensions and worst prompts."""
-    dim_scores = {"accuracy": [], "reasoning": [], "clarity": [], "utility": []}
+    dim_scores = {"persona": [], "depth": [], "consistency": [], "sharpness": [], "utility": []}
     prompt_gaps = []
 
     for j in judgments:
